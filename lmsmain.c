@@ -11,7 +11,6 @@ void rentalBook();
 void removeRentalRecord();
 void viewRental();
 
-
 FILE *fptr;
 
 struct book

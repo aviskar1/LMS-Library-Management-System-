@@ -201,6 +201,15 @@ void bookList(){
 /*
     Function to remove the added books from the library.
 */
+
+/*
+    Removes a book record from a file containing book data.
+    Working:It opens the original file for reading and a
+            temporary file for writing. It reads each book record from the original file, and if the book with the 
+            specified ID is found, it skips writing that record to the temporary file. 
+            Once all records have been processed, it closes both files.
+*/
+
 void removeBookFromFile(int bookIdToRemove) {
     FILE *inputFile = fopen("books.txt", "rb");
     FILE *tempFile = fopen("temp.txt", "wb");
@@ -234,13 +243,7 @@ void removeBookFromFile(int bookIdToRemove) {
     }
 }
 
-/*
-    Removes a book record from a file containing book data.
-    Working:It opens the original file for reading and a
-            temporary file for writing. It reads each book record from the original file, and if the book with the 
-            specified ID is found, it skips writing that record to the temporary file. 
-            Once all records have been processed, it closes both files.
-*/
+
 
 void removeBook() {
     int bookIdToRemove;
@@ -250,6 +253,7 @@ void removeBook() {
 
     removeBookFromFile(bookIdToRemove);//calling the function and passing the book id to remove
 }
+
 
 /*
     A function to issue books for students and keep the books issued and their dates in the database

@@ -11,7 +11,12 @@ void rentalBook();
 void removeRentalRecord();
 void viewRental();
 
-FILE *fptr;
+
+FILE *fptr; //defining a file pointer globally
+
+/*
+# this structure defines a book with its details
+*/
 
 struct book
 {
@@ -20,6 +25,10 @@ struct book
     char authName[20];
     char dateAdded[20];
 }b;
+
+/*
+# this structure defines students with details
+*/
 
 struct student
 {
@@ -31,6 +40,12 @@ struct student
     char date[20];
 
 };
+
+
+
+/*
+a function to show loading animation
+*/
 
 
 void loadingAnimation(int seconds) {
@@ -46,30 +61,18 @@ void loadingAnimation(int seconds) {
 }
 
 
-void centerConsoleOutput() {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    COORD coord;
-    coord.X = (SHORT)((csbi.dwSize.X - 100) / 2);
-    coord.Y = (SHORT)((csbi.dwSize.Y - 20) / 2);
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
-
-
-
-
+/*---MAIN FUNCTION---*/
 
 int main() {
-    while (1) {  // Infinite loop
-        centerConsoleOutput();
-        loadingAnimation(2);
-        
-        system("cls");
+    loadingAnimation(2); //runs the loading animation
+    system("cls"); 
+    printf("=============================================\n");
+    printf("       Welcome to Library Management System       \n");
+    printf("=============================================\n\n");
+    
+    while (1) {  // Infinite loop to run the program multiple times
 
-        printf("=============================================\n");
-        printf("       Welcome to Library Management System       \n");
-        printf("=============================================\n\n");
-        printf("1. Add Book to Library\n");
+        printf("\n1. Add Book to Library\n");
         printf("2. Display Book List of Library\n");
         printf("3. Remove Book from Library\n");
         printf("4. Register rental of new book for student\n");
@@ -80,7 +83,9 @@ int main() {
         int ch;
         printf("Enter your choice: ");
         scanf("%d", &ch);
-
+/*
+Switch case to call functions by getting the choice from the user
+*/
         switch (ch) {
             case 1:
                 addBook();
@@ -101,7 +106,7 @@ int main() {
             case 5:
                 removeRentalRecord();
                 break;
-            
+
             case 6:
                 viewRental();
                 break;
@@ -112,13 +117,14 @@ int main() {
             default:
                 printf("Invalid choice. Please select a valid option.\n");
                 break;
+
         }
     }
 
     return 0;
 }
 
-
+/*---CUSTOM FUNCTIONS---*/
 
 
 void addBook(){
@@ -142,7 +148,11 @@ void addBook(){
         return;
     }
 
-    printf("Enter the unique id of the book");
+/*
+# reading the datails of book from the user
+*/
+
+    printf("Enter the unique id of the book: ");
     scanf("%d", &b.bookId);
 
     printf("Enter the book name: ");
@@ -153,23 +163,25 @@ void addBook(){
     fflush(stdin);
     gets(b.authName);
 
-    printf("Book Added Successfully");
+    fflush(stdin);
 
+    printf("Book Added Successfully");
+    fflush(stdin);
     fwrite(&b, sizeof(b), 1, fptr);
     fclose(fptr);
 }
 
+
+
+/*a function for dislaying the books availabe in library*/
 void bookList(){
-    printf("you chose booklist\n");
-
-
     system("cls");
     printf("---------Available Books---------\n\n");
     printf("%-30s %-30s %-30s %s\n\n", "Book id", "Book Name", "Author", "Date Added");
 
 /*
     # here,multiple format specifiers are used to arrange the data in tabular form
-    $ for example, %-10s indicates left indentation with empty character field of 10
+    # for example, %-10s indicates left indentation with empty character field of 10
 */
 
     fptr = fopen("books.txt", "rb");
@@ -186,7 +198,9 @@ void bookList(){
 }
 
 
-
+/*
+    Function to remove the added books from the library.
+*/
 void removeBookFromFile(int bookIdToRemove) {
     FILE *inputFile = fopen("books.txt", "rb");
     FILE *tempFile = fopen("temp.txt", "wb");
@@ -197,7 +211,7 @@ void removeBookFromFile(int bookIdToRemove) {
     }
 
     struct book b;
-    int bookFound = 0;
+    int bookFound = 0;  //defining a bookfound status
 
     while (fread(&b, sizeof(b), 1, inputFile) == 1) {
         if (b.bookId == bookIdToRemove) {
@@ -221,10 +235,11 @@ void removeBookFromFile(int bookIdToRemove) {
 }
 
 /*
-    remove a book record from a file containing book data. It opens the original file for reading and a
-    temporary file for writing. It reads each book record from the original file, and if the book with the 
-    specified ID is found, it skips writing that record to the temporary file. 
-    Once all records have been processed, it closes both files.
+    Removes a book record from a file containing book data.
+    Working:It opens the original file for reading and a
+            temporary file for writing. It reads each book record from the original file, and if the book with the 
+            specified ID is found, it skips writing that record to the temporary file. 
+            Once all records have been processed, it closes both files.
 */
 
 void removeBook() {
@@ -233,8 +248,12 @@ void removeBook() {
     printf("Enter the book id to remove: ");
     scanf("%d", &bookIdToRemove);
 
-    removeBookFromFile(bookIdToRemove);
+    removeBookFromFile(bookIdToRemove);//calling the function and passing the book id to remove
 }
+
+/*
+    A function to issue books for students and keep the books issued and their dates in the database
+*/
 
 void rentalBook() {
     struct student s;
@@ -249,6 +268,7 @@ void rentalBook() {
 
     printf("Enter student's roll number: ");
     scanf("%d", &s.studRoll);
+    fflush(stdin);
 
     printf("Enter the book ID to be issued: ");
     scanf("%d", &s.bookID);
@@ -260,7 +280,11 @@ void rentalBook() {
         return;
     }
 
-    // Search for the book by ID and issue it to the student
+/*
+    It searches for the book id and its name in the file where all the books available in library are added.
+    If the record matches then it issues the book to the student by storing the data in a file with time.
+*/  
+
     FILE *booksFile = fopen("books.txt", "rb");
     if (booksFile == NULL) {
         printf("Error opening books file.\n");
@@ -291,6 +315,14 @@ void rentalBook() {
 
     fclose(fptr);
 }
+
+
+/*
+    This is a function to remove rental/issuing of the book by a student.
+    If the student returns the book then this function come in handy.
+    It just checks for the data and removes the book.
+    Its logic is just like removeBookFromFile() function from above.
+*/
 
 void removeRentalRecord() {
     char studentName[50];
@@ -335,12 +367,22 @@ void removeRentalRecord() {
     }
 }
 
+
+/*
+    It displays the rented book list in a tabular form.
+*/
+
 void viewRental(){
     struct student s;
     system("cls");
     printf("---------Book Issue List---------\n\n");
 
-    printf("%-10s %-30s %-20s %-10s %-30s %s\n\n", "S.id", "Name", "Class", "Roll", "Book Name", "Date");
+    printf("%-10s %-30s %-20s %-10s %-30s %s\n\n", "Book.id", "Name", "Class", "Roll", "Book Name", "Date");
+
+/*
+    # here,multiple format specifiers are used to arrange the data in tabular form
+    # for example, %-10s indicates left indentation with empty character field of 10
+*/
 
     fptr = fopen("students.txt", "rb");
 

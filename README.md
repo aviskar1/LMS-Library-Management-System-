@@ -1,5 +1,5 @@
 
-# Library Management System
+# Library Management System ![alt](https://img.shields.io/badge/LMS_-1.01-yellow)
 
 The Library Management System is a simple command-line application written in C for managing books and student rentals in a library. This project allows you to perform various tasks such as adding books to the library, displaying book lists, managing student rentals, and more.
 
